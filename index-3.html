@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Пробор</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Oswald:wght@500;600;700&display=swap">
+<style>
+/* Макет: шапка с полосой барбер-шеста, первый экран (заголовок + талон «ближайшее окно»),
+   прайс-борд, мастера, запись (шаги слева, итог справа), контакты, подвал. */
+:root {
+  --bg: #F3F4F5;
+  --surface: #FFFFFF;
+  --ink: #12161C;
+  --muted: #5A6471;
+  --line: #D5DAE0;
+  --red: #C42B22;
+  --red-ink: #FFFFFF;
+  --blue: #1F3F7A;
+  --stripe-w: #FFFFFF;
+  --font-display: 'Oswald', 'Arial Narrow', Impact, sans-serif;
+  --font-body: 'Golos Text', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1217;
+    --surface: #161B22;
+    --ink: #ECEFF3;
+    --muted: #9AA4B1;
+    --line: #2A313A;
+    --red: #E8594D;
+    --red-ink: #1A0705;
+    --blue: #86A2E0;
+    --stripe-w: #E9EDF2;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1217;
+  --surface: #161B22;
+  --ink: #ECEFF3;
+  --muted: #9AA4B1;
+  --line: #2A313A;
+  --red: #E8594D;
+  --red-ink: #1A0705;
+  --blue: #86A2E0;
+  --stripe-w: #E9EDF2;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  padding-block: 0 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1120px; margin-inline: auto; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+
+.pole {
+  background: repeating-linear-gradient(-45deg, var(--red) 0 10px, var(--stripe-w) 10px 20px, var(--blue) 20px 30px, var(--stripe-w) 30px 40px);
+}
+.label { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.02em; text-wrap: balance; margin: 0; }
+h2 { font-size: clamp(1.9rem, 5vw, 2.8rem); line-height: 1.05; font-weight: 600; margin-top: 8px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 26px;
+  border: 2px solid var(--ink); border-radius: 4px; background: transparent; color: var(--ink);
+  font-family: var(--font-display); font-weight: 500; font-size: 1.05rem; letter-spacing: 0.06em; text-transform: uppercase;
+  text-decoration: none; cursor: pointer;
+}
+.btn:hover { background: var(--ink); color: var(--bg); }
+.btn-red { background: var(--red); border-color: var(--red); color: var(--red-ink); }
+.btn-red:hover { background: var(--red); color: var(--red-ink); filter: brightness(1.1); }
+.btn[disabled] { opacity: 0.45; cursor: not-allowed; filter: none; }
+
+/* Шапка */
+.top-band { height: 8px; }
+.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding-block: 18px; }
+.logo { text-decoration: none; display: flex; align-items: baseline; gap: 10px; }
+.logo b { font-family: var(--font-display); font-weight: 700; font-size: 1.7rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.logo span { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; }
+.nav a:not(.btn) { text-decoration: none; color: var(--muted); font-size: 0.95rem; }
+.nav a:not(.btn):hover { color: var(--ink); text-decoration: underline; text-underline-offset: 5px; }
+.nav .btn { min-height: 40px; padding: 0 18px; font-size: 0.95rem; }
+
+/* Первый экран */
+.hero { display: flex; flex-wrap: wrap; gap: 40px; align-items: center; padding-block: 40px 64px; }
+.hero-text { flex: 1 1 440px; min-width: 0; }
+.hero-side { flex: 1 1 300px; min-width: 0; max-width: 460px; }
+h1 { font-size: clamp(2.6rem, 9vw, 5rem); line-height: 1; font-weight: 700; margin-bottom: 22px; }
+h1 em { font-style: normal; color: var(--red); }
+.lead { max-width: 46ch; color: var(--muted); font-size: 1.1rem; margin: 0 0 28px; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.ticket { display: flex; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.ticket-stripe { flex: 0 0 18px; }
+.ticket-body { flex: 1; min-width: 0; padding: 22px 22px 20px; }
+.ticket-time { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.8rem, 5vw, 2.4rem); line-height: 1.1; text-transform: uppercase; margin: 10px 0 4px; font-variant-numeric: tabular-nums; }
+.ticket-sub { color: var(--muted); margin: 0 0 18px; }
+.ticket-foot { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+
+/* Секции */
+.section { padding-block: 60px; border-top: 1px solid var(--line); }
+.section-lead { color: var(--muted); max-width: 56ch; margin: 12px 0 0; }
+
+/* Прайс */
+.board { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); column-gap: 56px; }
+.board li { padding-block: 18px; border-bottom: 1px solid var(--line); }
+.row { display: flex; align-items: baseline; gap: 10px; }
+.row h3 { font-size: 1.3rem; font-weight: 500; flex: 0 1 auto; }
+.dots { flex: 1; min-width: 16px; border-bottom: 2px dotted var(--line); transform: translateY(-4px); }
+.price { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.board p { margin: 4px 0 0; color: var(--muted); font-size: 0.95rem; }
+.dur { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); margin-top: 6px; display: block; }
+
+/* Мастера */
+.masters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 20px; margin-top: 28px; }
+.master { display: flex; gap: 16px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 20px; min-width: 0; }
+.mono { flex: 0 0 56px; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--bg); font-family: var(--font-display); font-weight: 600; font-size: 1.6rem; }
+.master h3 { font-size: 1.4rem; font-weight: 600; }
+.master p { margin: 2px 0 10px; color: var(--muted); }
+.master dl { margin: 0; font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+.master dl div { display: flex; gap: 8px; }
+.master dt { color: var(--muted); }
+.master dd { margin: 0; color: var(--ink); }
+
+/* Запись */
+.booking { display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start; margin-top: 28px; }
+.steps { flex: 1 1 560px; min-width: 0; display: grid; gap: 34px; }
+.sum { flex: 1 1 300px; min-width: 0; max-width: 100%; position: sticky; top: 16px; }
+@media (max-width: 900px) { .sum { position: static; flex-basis: 100%; } }
+.step-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+.step-no { font-family: var(--font-mono); font-size: 0.8rem; color: var(--red); font-weight: 500; }
+.step-head h3 { font-size: 1.3rem; font-weight: 500; }
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 10px; }
+.opt { text-align: left; background: var(--surface); border: 1.5px solid var(--line); border-radius: 6px; padding: 12px 14px; cursor: pointer; min-width: 0; display: flex; flex-direction: column; gap: 2px; min-height: 64px; }
+.opt:hover { border-color: var(--ink); }
+.opt[aria-pressed="true"] { border-color: var(--red); box-shadow: inset 0 0 0 1px var(--red); }
+.opt b { font-weight: 600; }
+.opt small { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
+.opt[disabled] { opacity: 0.5; cursor: not-allowed; }
+.opt[disabled]:hover { border-color: var(--line); }
+.days { display: grid; grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 8px; }
+.day { text-align: center; align-items: center; padding: 10px 6px; }
+.day b { font-family: var(--font-display); font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; font-size: 1rem; }
+.times { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
+.slot { min-height: 44px; border: 1.5px solid var(--line); background: var(--surface); border-radius: 4px; font-family: var(--font-mono); font-size: 0.95rem; font-variant-numeric: tabular-nums; cursor: pointer; }
+.slot:hover { border-color: var(--ink); }
+.slot[aria-pressed="true"] { background: var(--red); border-color: var(--red); color: var(--red-ink); }
+.slot[disabled] { border-style: dashed; color: var(--muted); opacity: 0.55; text-decoration: line-through; cursor: not-allowed; }
+.slot[disabled]:hover { border-color: var(--line); }
+.hint { margin: 12px 0 0; font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.card-band { height: 8px; }
+.card-body { padding: 20px; }
+.card h3 { font-size: 1.4rem; font-weight: 600; margin-bottom: 14px; }
+.facts { margin: 0 0 18px; }
+.facts div { display: flex; justify-content: space-between; gap: 16px; padding-block: 8px; border-bottom: 1px solid var(--line); }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; text-align: right; font-weight: 500; min-width: 0; overflow-wrap: anywhere; }
+.facts .total dd { font-family: var(--font-display); font-size: 1.4rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.field { display: grid; gap: 6px; margin-bottom: 14px; }
+.field label { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.field input { font: inherit; min-height: 46px; padding: 0 12px; border-radius: 4px; border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); width: 100%; }
+.field input:focus-visible { outline: 2px solid var(--red); outline-offset: 1px; }
+.card .btn { width: 100%; }
+.err { min-height: 1.3em; margin: 10px 0 0; color: var(--red); font-size: 0.92rem; }
+.note { margin: 6px 0 0; font-size: 0.82rem; color: var(--muted); }
+
+.done { margin-top: 20px; }
+.done[hidden] { display: none; }
+.done .card { border-color: var(--red); }
+.done h3 { color: var(--red); }
+
+.mine { margin-top: 36px; }
+.mine h3 { font-size: 1.3rem; font-weight: 500; margin-bottom: 12px; }
+.mine ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.mine li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 16px; }
+.mine li div { min-width: 0; }
+.mine li small { display: block; color: var(--muted); font-family: var(--font-mono); font-size: 0.78rem; }
+.cancel { min-height: 40px; padding: 0 14px; border-radius: 4px; border: 1.5px solid var(--line); background: transparent; cursor: pointer; }
+.cancel:hover { border-color: var(--ink); }
+.cancel.sure { border-color: var(--red); color: var(--red); font-weight: 600; }
+
+/* Контакты */
+.contacts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 32px; margin-top: 28px; }
+.contacts > * { min-width: 0; }
+.contacts h3 { font-family: var(--font-mono); font-weight: 500; font-size: 0.75rem; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; }
+.contacts p { margin: 0; }
+.rows { margin: 0; }
+.rows div { display: flex; justify-content: space-between; gap: 16px; padding-block: 8px; border-bottom: 1px solid var(--line); }
+.rows dt { color: var(--muted); }
+.rows dd { margin: 0; font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; }
+
+.foot { border-top: 1px solid var(--line); padding-top: 24px; color: var(--muted); font-size: 0.9rem; }
+.foot p { margin: 0; max-width: 72ch; }
+</style>
+</head>
+<body>
+
+<div class="top-band pole" aria-hidden="true"></div>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="#top"><b>Пробор</b><span>barbershop</span></a>
+    <nav class="nav" aria-label="Разделы сайта">
+      <a href="#services">Услуги</a>
+      <a href="#masters">Мастера</a>
+      <a href="#contacts">Контакты</a>
+      <a class="btn btn-red" href="#booking">Записаться</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Стрижка по записи. <em>Без очереди.</em></h1>
+        <p class="lead">Три мастера, шесть услуг и время, которое известно заранее. Выберите мастера и час, остальное мы подготовим.</p>
+        <div class="actions">
+          <a class="btn btn-red" href="#booking">Записаться онлайн</a>
+          <a class="btn" href="#services">Цены</a>
+        </div>
+      </div>
+      <aside class="hero-side" aria-label="Ближайшее свободное время">
+        <div class="ticket">
+          <div class="ticket-stripe pole" aria-hidden="true"></div>
+          <div class="ticket-body">
+            <div class="label">Ближайшее окно на 30 минут</div>
+            <div class="ticket-time" id="nf-time">&nbsp;</div>
+            <p class="ticket-sub" id="nf-sub">&nbsp;</p>
+            <button class="btn btn-red" id="nf-take" type="button">Занять это время</button>
+            <div class="ticket-foot" id="nf-foot">&nbsp;</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section" id="services" aria-labelledby="services-title">
+      <div class="label">Прайс в рублях</div>
+      <h2 id="services-title">Услуги</h2>
+      <ul class="board" id="board"></ul>
+    </section>
+
+    <section class="section" id="masters" aria-labelledby="masters-title">
+      <div class="label">Три кресла</div>
+      <h2 id="masters-title">Мастера</h2>
+      <div class="masters" id="masters-list"></div>
+    </section>
+
+    <section class="section" id="booking" aria-labelledby="booking-title">
+      <div class="label">Запись онлайн</div>
+      <h2 id="booking-title">Выберите время</h2>
+      <p class="section-lead">Занятые часы отмечены зачёркнутым. Предоплата не нужна.</p>
+
+      <div class="booking">
+        <div class="steps">
+          <div>
+            <div class="step-head"><span class="step-no">01</span><h3>Услуга</h3></div>
+            <div class="opts" id="opt-services"></div>
+          </div>
+          <div>
+            <div class="step-head"><span class="step-no">02</span><h3>Мастер</h3></div>
+            <div class="opts" id="opt-barbers"></div>
+          </div>
+          <div>
+            <div class="step-head"><span class="step-no">03</span><h3>День</h3></div>
+            <div class="days" id="opt-days"></div>
+          </div>
+          <div>
+            <div class="step-head"><span class="step-no">04</span><h3>Время</h3></div>
+            <div class="times" id="opt-times"></div>
+            <p class="hint" id="times-hint"></p>
+          </div>
+        </div>
+
+        <aside class="sum" aria-label="Ваша запись">
+          <form class="card" id="form" novalidate>
+            <div class="card-band pole" aria-hidden="true"></div>
+            <div class="card-body">
+              <h3>Ваша запись</h3>
+              <dl class="facts" id="summary"></dl>
+              <div class="field">
+                <label for="f-name">Имя</label>
+                <input id="f-name" name="name" type="text" autocomplete="given-name" maxlength="40" placeholder="Как к вам обращаться">
+              </div>
+              <div class="field">
+                <label for="f-phone">Телефон</label>
+                <input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="18" placeholder="+7 (900) 123-45-67">
+              </div>
+              <button class="btn btn-red" id="submit" type="submit">Записаться</button>
+              <p class="err" id="err" role="alert"></p>
+              <p class="note">Это демо-сайт. Запись сохраняется только в вашем браузере и никому не отправляется.</p>
+            </div>
+          </form>
+          <div class="done" id="done" hidden aria-live="polite"></div>
+        </aside>
+      </div>
+
+      <div class="mine" id="mine" hidden>
+        <h3>Ваши записи</h3>
+        <ul id="mine-list"></ul>
+      </div>
+    </section>
+
+    <section class="section" id="contacts" aria-labelledby="contacts-title">
+      <div class="label">Как нас найти</div>
+      <h2 id="contacts-title">Контакты</h2>
+      <div class="contacts">
+        <div>
+          <h3>Адрес</h3>
+          <p>Сосновск, ул. Заводская, 7<br>Вход с торца здания, у красно-синего шеста.</p>
+        </div>
+        <div>
+          <h3>Часы</h3>
+          <dl class="rows">
+            <div><dt>Пн–Пт</dt><dd>10:00–21:00</dd></div>
+            <div><dt>Сб–Вс</dt><dd>10:00–20:00</dd></div>
+            <div><dt>Последняя запись</dt><dd>за 30 мин до закрытия</dd></div>
+          </dl>
+        </div>
+        <div>
+          <h3>В студии</h3>
+          <dl class="rows">
+            <div><dt>Кресел</dt><dd>3</dd></div>
+            <div><dt>Предоплата</dt><dd>нет</dd></div>
+            <div><dt>Чай и кофе</dt><dd>бесплатно</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Демо-проект для портфолио. Барбершоп, мастера и адрес вымышлены.<br>Сайт сделал <a href="https://t.me/bombhw">@bombhw</a>. Нужна онлайн-запись для вашего дела? Напишите в Telegram.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var SERVICES = [
+    { id: 'cut',     name: 'Мужская стрижка',    desc: 'Мытьё головы, стрижка, укладка',        blocks: 2, price: 1500 },
+    { id: 'machine', name: 'Стрижка машинкой',   desc: 'Одна насадка, контур, без укладки',     blocks: 1, price: 900 },
+    { id: 'beard',   name: 'Борода',             desc: 'Моделирование, горячее полотенце, масло', blocks: 1, price: 1000 },
+    { id: 'combo',   name: 'Стрижка и борода',   desc: 'Полный образ за один визит',            blocks: 3, price: 2300 },
+    { id: 'shave',   name: 'Королевское бритьё', desc: 'Опасная бритва, два горячих полотенца', blocks: 2, price: 1600 },
+    { id: 'duo',     name: 'Отец и сын',         desc: 'Две стрижки подряд, сыну до 12 лет',    blocks: 3, price: 2200 }
+  ];
+  var BARBERS = [
+    { id: 'artem', name: 'Артём', role: 'Фейды и короткие стрижки', exp: '7 лет', off: 0, offText: 'воскресенье' },
+    { id: 'mark',  name: 'Марк',  role: 'Борода и бритьё',          exp: '5 лет', off: 1, offText: 'понедельник' },
+    { id: 'ilya',  name: 'Илья',  role: 'Классика и длинные волосы', exp: '9 лет', off: 3, offText: 'среда' }
+  ];
+  var WD = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+  var MON = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+  var STORE_KEY = 'probor-demo-bookings';
+  var DAYS_AHEAD = 7;
+
+  function $(id) { return document.getElementById(id); }
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function money(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽'; }
+  function duration(blocks) {
+    var m = blocks * 30;
+    if (m < 60) return m + ' мин';
+    var h = Math.floor(m / 60), r = m % 60;
+    return h + ' ч' + (r ? ' ' + r + ' мин' : '');
+  }
+  function dateKey(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function dateLabel(d) { return d.getDate() + ' ' + MON[d.getMonth()]; }
+  function findService(id) { return SERVICES.filter(function (s) { return s.id === id; })[0]; }
+  function findBarber(id) { return BARBERS.filter(function (b) { return b.id === id; })[0]; }
+
+  /* Псевдослучайная занятость мастеров: одинаковая для одного мастера и дня при каждой загрузке */
+  function hash(str) {
+    var h = 2166136261;
+    for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  function rng(seed) {
+    return function () {
+      seed = (seed + 0x6D2B79F5) >>> 0;
+      var t = seed;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  /* Записи этого посетителя */
+  var now = new Date();
+  var todayKey = dateKey(now);
+  var bookings = [];
+  var storageOk = true;
+  try {
+    var raw = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
+    if (Array.isArray(raw)) bookings = raw.filter(function (b) { return b && b.key >= todayKey && findService(b.service) && findBarber(b.barber); });
+  } catch (e) { storageOk = false; }
+  function save() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(bookings)); } catch (e) { storageOk = false; }
+  }
+
+  var dates = [];
+  for (var i = 0; i < DAYS_AHEAD; i++) dates.push(new Date(now.getFullYear(), now.getMonth(), now.getDate() + i));
+
+  function hoursFor(d) {
+    var wk = d.getDay() === 0 || d.getDay() === 6;
+    var open = 10, close = wk ? 20 : 21;
+    return { open: open, close: close, n: (close - open) * 2 };
+  }
+  function slotTime(d, s) {
+    var m = hoursFor(d).open * 60 + s * 30;
+    return pad(Math.floor(m / 60)) + ':' + pad(m % 60);
+  }
+
+  function busyFor(barber, d) {
+    if (barber.off === d.getDay()) return null;
+    var h = hoursFor(d), key = dateKey(d), busy = [], k;
+    for (k = 0; k < h.n; k++) busy.push(false);
+    var rnd = rng(hash(barber.id + key));
+    var p = 0;
+    while (p < h.n) {
+      if (rnd() < 0.3) {
+        var len = 1 + Math.floor(rnd() * 3);
+        for (var j = 0; j < len && p + j < h.n; j++) busy[p + j] = true;
+        p += len + 1;
+      } else { p++; }
+    }
+    bookings.forEach(function (b) {
+      if (b.barber === barber.id && b.key === key) {
+        for (var q = 0; q < b.blocks; q++) busy[b.slot + q] = true;
+      }
+    });
+    return busy;
+  }
+
+  /* Свободные начала записи: объект {номер слота: id мастера} */
+  function availability(barberId, d, blocks) {
+    var result = {};
+    var list = barberId === 'any' ? BARBERS : [findBarber(barberId)];
+    var h = hoursFor(d), isToday = dateKey(d) === todayKey;
+    var nowMin = now.getHours() * 60 + now.getMinutes();
+    list.forEach(function (b) {
+      var busy = busyFor(b, d);
+      if (!busy) return;
+      for (var s = 0; s + blocks <= h.n; s++) {
+        if (isToday && h.open * 60 + s * 30 < nowMin + 30) continue;
+        var ok = true;
+        for (var q = 0; q < blocks; q++) { if (busy[s + q]) { ok = false; break; } }
+        if (ok && result[s] === undefined) result[s] = b.id;
+      }
+    });
+    return result;
+  }
+  function count(obj) { return Object.keys(obj).length; }
+
+  /* Состояние формы */
+  var state = { service: 'cut', barber: 'any', day: 0, time: null };
+  var pendingCancel = null;
+
+  function currentBlocks() { return findService(state.service).blocks; }
+  function dayAvail(i) { return availability(state.barber, dates[i], currentBlocks()); }
+
+  function normalize() {
+    if (count(dayAvail(state.day)) === 0) {
+      for (var i = 0; i < dates.length; i++) {
+        if (count(dayAvail(i)) > 0) { state.day = i; break; }
+      }
+    }
+    if (state.time !== null && dayAvail(state.day)[state.time] === undefined) state.time = null;
+  }
+
+  function dayName(i) { return i === 0 ? 'Сегодня' : i === 1 ? 'Завтра' : WD[dates[i].getDay()]; }
+
+  /* Отрисовка */
+  function renderStatic() {
+    $('board').innerHTML = SERVICES.map(function (s) {
+      return '<li><div class="row"><h3>' + esc(s.name) + '</h3><span class="dots" aria-hidden="true"></span><span class="price">' + money(s.price) +
+        '</span></div><p>' + esc(s.desc) + '</p><span class="dur">' + duration(s.blocks) + '</span></li>';
+    }).join('');
+    $('masters-list').innerHTML = BARBERS.map(function (b) {
+      return '<article class="master"><div class="mono" aria-hidden="true">' + esc(b.name.charAt(0)) + '</div><div><h3>' + esc(b.name) +
+        '</h3><p>' + esc(b.role) + '</p><dl><div><dt>Стаж:</dt><dd>' + esc(b.exp) + '</dd></div><div><dt>Выходной:</dt><dd>' + esc(b.offText) + '</dd></div></dl></div></article>';
+    }).join('');
+  }
+
+  function renderOptions() {
+    $('opt-services').innerHTML = SERVICES.map(function (s) {
+      return '<button type="button" class="opt" data-service="' + s.id + '" aria-pressed="' + (state.service === s.id) + '"><b>' + esc(s.name) +
+        '</b><small>' + duration(s.blocks) + ' · ' + money(s.price) + '</small></button>';
+    }).join('');
+
+    var barbers = '<button type="button" class="opt" data-barber="any" aria-pressed="' + (state.barber === 'any') + '"><b>Любой мастер</b><small>больше свободного времени</small></button>';
+    barbers += BARBERS.map(function (b) {
+      return '<button type="button" class="opt" data-barber="' + b.id + '" aria-pressed="' + (state.barber === b.id) + '"><b>' + esc(b.name) +
+        '</b><small>' + esc(b.role) + '</small></button>';
+    }).join('');
+    $('opt-barbers').innerHTML = barbers;
+
+    $('opt-days').innerHTML = dates.map(function (d, i) {
+      var a = dayAvail(i), n = count(a);
+      var off = state.barber !== 'any' && findBarber(state.barber).off === d.getDay();
+      var note = off ? 'выходной' : (n === 0 ? 'нет мест' : dateLabel(d));
+      return '<button type="button" class="opt day" data-day="' + i + '" aria-pressed="' + (state.day === i) + '"' + (n === 0 ? ' disabled' : '') +
+        '><b>' + dayName(i) + '</b><small>' + note + '</small></button>';
+    }).join('');
+
+    var d = dates[state.day], h = hoursFor(d), avail = dayAvail(state.day), html = '';
+    for (var s = 0; s < h.n; s++) {
+      var free = avail[s] !== undefined;
+      html += '<button type="button" class="slot" data-slot="' + s + '" aria-pressed="' + (state.time === s) + '"' + (free ? '' : ' disabled') + '>' + slotTime(d, s) + '</button>';
+    }
+    $('opt-times').innerHTML = html;
+    $('times-hint').textContent = 'Свободно ' + count(avail) + ' из ' + h.n + ' начал записи на ' + dateLabel(d) + '. Услуга займёт ' + duration(currentBlocks()) + '.';
+  }
+
+  function barberFor(slot) {
+    var a = dayAvail(state.day);
+    return a[slot] !== undefined ? findBarber(a[slot]) : null;
+  }
+
+  function renderSummary() {
+    var s = findService(state.service), d = dates[state.day];
+    var who = state.time !== null ? barberFor(state.time) : null;
+    var barberText = state.barber === 'any' ? (who ? who.name + ' (подберём)' : 'Любой мастер') : findBarber(state.barber).name;
+    var when = state.time !== null ? dayName(state.day) + ', ' + dateLabel(d) + ', ' + slotTime(d, state.time) : 'Выберите время';
+    $('summary').innerHTML =
+      '<div><dt>Услуга</dt><dd>' + esc(s.name) + '</dd></div>' +
+      '<div><dt>Мастер</dt><dd>' + esc(barberText) + '</dd></div>' +
+      '<div><dt>Когда</dt><dd>' + esc(when) + '</dd></div>' +
+      '<div><dt>Длительность</dt><dd>' + duration(s.blocks) + '</dd></div>' +
+      '<div class="total"><dt>К оплате в студии</dt><dd>' + money(s.price) + '</dd></div>';
+  }
+
+  function renderMine() {
+    var box = $('mine');
+    var list = bookings.slice().sort(function (a, b) { return (a.key + pad(a.slot)) < (b.key + pad(b.slot)) ? -1 : 1; });
+    box.hidden = list.length === 0;
+    $('mine-list').innerHTML = list.map(function (b) {
+      var d = dateFromKey(b.key), sv = findService(b.service), br = findBarber(b.barber);
+      var sure = pendingCancel === b.id;
+      return '<li><div><b>' + esc(sv.name) + '</b> · ' + esc(br.name) + '<small>' + WD[d.getDay()] + ', ' + dateLabel(d) + ', ' + slotTime(d, b.slot) +
+        ' · № ' + esc(b.id) + (storageOk ? '' : ' · только до закрытия вкладки') + '</small></div><button type="button" class="cancel' + (sure ? ' sure' : '') + '" data-cancel="' + esc(b.id) + '">' +
+        (sure ? 'Точно отменить?' : 'Отменить') + '</button></li>';
+    }).join('');
+  }
+  function dateFromKey(key) {
+    var p = key.split('-');
+    return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+  }
+
+  function renderNextFree() {
+    var found = null;
+    for (var i = 0; i < dates.length && !found; i++) {
+      var a = availability('any', dates[i], 1), keys = Object.keys(a).map(Number);
+      if (keys.length) { keys.sort(function (x, y) { return x - y; }); found = { day: i, slot: keys[0], barber: a[keys[0]] }; }
+    }
+    var h = hoursFor(dates[0]);
+    $('nf-foot').textContent = 'Сегодня работаем ' + pad(h.open) + ':00–' + pad(h.close) + ':00';
+    if (!found) {
+      $('nf-time').textContent = 'Мест нет';
+      $('nf-sub').textContent = 'На ближайшую неделю всё занято.';
+      $('nf-take').hidden = true;
+      return;
+    }
+    $('nf-time').textContent = dayName(found.day) + ', ' + slotTime(dates[found.day], found.slot);
+    $('nf-sub').textContent = findBarber(found.barber).name + ' · стрижка машинкой, 30 мин';
+    $('nf-take').onclick = function () {
+      state.service = 'machine'; state.barber = found.barber; state.day = found.day; state.time = found.slot;
+      renderAll();
+      $('booking').scrollIntoView();
+    };
+  }
+
+  function renderAll() {
+    normalize();
+    renderOptions();
+    renderSummary();
+    renderMine();
+    $('done').hidden = true;
+    $('err').textContent = '';
+  }
+
+  /* Выбор в шагах */
+  $('booking').addEventListener('click', function (e) {
+    var t = e.target.closest('button');
+    if (!t) return;
+    if (t.dataset.service) { state.service = t.dataset.service; state.time = null; renderAll(); }
+    else if (t.dataset.barber) { state.barber = t.dataset.barber; state.time = null; renderAll(); }
+    else if (t.dataset.day) { state.day = Number(t.dataset.day); state.time = null; renderAll(); }
+    else if (t.dataset.slot) { state.time = Number(t.dataset.slot); normalize(); renderOptions(); renderSummary(); $('err').textContent = ''; }
+    else if (t.dataset.cancel) {
+      var id = t.dataset.cancel;
+      if (pendingCancel === id) {
+        bookings = bookings.filter(function (b) { return b.id !== id; });
+        pendingCancel = null;
+        save();
+        renderAll();
+        renderNextFree();
+      } else { pendingCancel = id; renderMine(); }
+    }
+  });
+
+  /* Телефон: маска +7 (900) 123-45-67 */
+  function fmtPhone(v) {
+    var d = v.replace(/\D/g, '');
+    if (!d) return '';
+    if (d.charAt(0) === '8') d = '7' + d.slice(1);
+    if (d.charAt(0) !== '7') d = '7' + d;
+    d = d.slice(0, 11);
+    var o = '+7';
+    if (d.length > 1) o += ' (' + d.slice(1, 4);
+    if (d.length >= 5) o += ') ' + d.slice(4, 7);
+    if (d.length >= 8) o += '-' + d.slice(7, 9);
+    if (d.length >= 10) o += '-' + d.slice(9, 11);
+    return o;
+  }
+  $('f-phone').addEventListener('input', function () { this.value = fmtPhone(this.value); });
+
+  /* Оформление записи */
+  $('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var err = $('err');
+    var name = $('f-name').value.trim();
+    var digits = $('f-phone').value.replace(/\D/g, '');
+    if (state.time === null) { err.textContent = 'Выберите время записи.'; return; }
+    if (name.length < 2) { err.textContent = 'Введите имя, не меньше двух букв.'; $('f-name').focus(); return; }
+    if (digits.length !== 11) { err.textContent = 'Введите телефон полностью, например +7 (900) 123-45-67.'; $('f-phone').focus(); return; }
+
+    var barber = barberFor(state.time);
+    if (!barber) { err.textContent = 'Это время только что заняли. Выберите другое.'; normalize(); renderOptions(); renderSummary(); return; }
+
+    var s = findService(state.service), d = dates[state.day];
+    var booking = {
+      id: 'P-' + (1000 + Math.floor(Math.random() * 9000)),
+      service: s.id, barber: barber.id, key: dateKey(d), slot: state.time, blocks: s.blocks, name: name, phone: $('f-phone').value
+    };
+    bookings.push(booking);
+    save();
+
+    var when = dayName(state.day) + ', ' + dateLabel(d) + ', ' + slotTime(d, state.time);
+    state.time = null;
+    renderAll();
+    renderNextFree();
+
+    var done = $('done');
+    done.innerHTML = '<div class="card"><div class="card-band pole" aria-hidden="true"></div><div class="card-body"><div class="label">Запись № ' + esc(booking.id) +
+      '</div><h3>Вы записаны, ' + esc(name) + '</h3><dl class="facts"><div><dt>Услуга</dt><dd>' + esc(s.name) + '</dd></div><div><dt>Мастер</dt><dd>' + esc(barber.name) +
+      '</dd></div><div><dt>Когда</dt><dd>' + esc(when) + '</dd></div><div class="total"><dt>К оплате в студии</dt><dd>' + money(s.price) + '</dd></div></dl>' +
+      '<p class="note">Демо: запись сохранена в вашем браузере и ниже в списке «Ваши записи». В настоящем проекте здесь уходит сообщение мастеру.</p></div></div>';
+    done.hidden = false;
+    done.scrollIntoView({ block: 'nearest' });
+  });
+
+  renderStatic();
+  renderNextFree();
+  renderAll();
+})();
+</script>
+</body>
+</html>
